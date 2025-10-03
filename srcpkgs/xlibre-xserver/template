@@ -80,7 +80,7 @@ vmove usr/share/man/man1/Xephyr.1
 }
 xlibre-xserver-xvfb_package() {
 short_desc="Virtual framebuffer X xserver"
-depends="xlibre-xserver-common xkeyboard-config xorg-xauth"
+depends="xkeyboard-config xorg-xauth"
 license="MIT GPL-2.0-or-later"
 pkg_install() {
 vmove usr/bin/Xvfb
