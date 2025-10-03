@@ -60,47 +60,49 @@ post_install() {
    chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
    find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
 }
+
 xlibre-xserver-xnest_package() {
-   short_desc="Nested X xserver that runs as an X application"
-   pkg_install() {
-   vmove usr/bin/Xnest
-   vmove usr/share/man/man1/Xnest.1
+    short_desc="Nested X server that runs as an X application"
+    pkg_install()
+    {
+        vmove usr/bin/Xnest
+        vmove usr/share/man/man1/Xnest.1
+    }
 }
-}
+
 xlibre-xserver-xephyr_package() {
-   short_desc="X xserver outputting to a window on a pre-existing X display"
-   pkg_install() {
+   short_desc="X server outputting to a window on a pre-existing X display"
+   pkg_install() 
+   {
    vmove usr/bin/Xephyr
    vmove usr/share/man/man1/Xephyr.1
+   }
 }
-}
+
 xlibre-xserver-xvfb_package() {
-    short_desc="Virtual framebuffer X xserver"
+    short_desc="Virtual framebuffer X server"
     depends="xkeyboard-config"
-    license="MIT GPL-2.0-or-later"
-    pkg_install() {
-    vmove usr/bin/Xvfb
-    vmove usr/share/man/man1/Xvfb.1
-    vinstall "${FILESDIR}/xvfb-run" 755 usr/bin
-    vinstall "${FILESDIR}/xvfb-run.1" 644 usr/share/man/man1
+    pkg_install()
+    {
+        vmove usr/bin/Xvfb
+        vmove usr/share/man/man1/Xvfb.1
+    }
 }
-}
+
 xlibre-xserver-common_package() {
-   short_desc+="- common files"
-   depends="xkeyboard-config"
-   pkg_install() {
-   vmove usr/lib/xorg/protocol.txt
-   vmove usr/share/man/man1/Xserver.1
-   vinstall "${wrksrc}/xkb/README.compiled" 644 var/lib/xkb
+  	short_desc+="- common files"
+  	pkg_install() {
+  		vmove usr/lib/xorg/protocol.txt
+  	}
 }
-}
+
 xlibre-xserver-devel_package() {
     depends="${makedepends}"
-    short_desc+=" - development files"
-    pkg_install() {
-    vmove usr/include
-    vmove usr/lib/pkgconfig
-    vmove usr/share/aclocal
-  }
+   	short_desc+=" - development files"
+   	pkg_install() {
+   		vmove usr/include
+   		vmove usr/lib/pkgconfig
+   		vmove usr/share/aclocal
+	   }
 }
 
