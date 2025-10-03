@@ -1,5 +1,5 @@
-# Template file for 'xlibre-server'
-pkgname=xlibre-server
+# Template file for 'xlibre-xserver'
+pkgname=xlibre-xserver
 version=25.0.0.12
 revision=1
 build_style=meson
@@ -18,7 +18,7 @@ makedepends="MesaLib-devel libXaw-devel libXfont2-devel
  nettle-devel libxcvt-devel font-util libunwind-devel libpciaccess-devel libxdmcp-devel
  $(vopt_if elogind 'dbus-devel')"
 # See hw/xfree86/common/xf86Module.h. Only care for the major version.
-depends="xlibre-server-common xkeyboard-config $(vopt_if elogind 'elogind')"
+depends="xlibre-xserver-common xkeyboard-config $(vopt_if elogind 'elogind')"
 checkdepends="xkeyboard-config"
 short_desc="XLibre fork of X.Org X server"
 maintainer="tmp <tmp@tmp.com>"
