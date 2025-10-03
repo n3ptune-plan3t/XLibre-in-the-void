@@ -18,7 +18,7 @@ makedepends="MesaLib-devel libXaw-devel libXfont2-devel
  nettle-devel libxcvt-devel font-util libunwind-devel libpciaccess-devel libXdmcp-devel
  $(vopt_if elogind 'dbus-devel')"
 # See hw/xfree86/common/xf86Module.h. Only care for the major version.
-depends="xlibre-xserver-common xkeyboard-config $(vopt_if elogind 'elogind')"
+depends="xkeyboard-config $(vopt_if elogind 'elogind')"
 checkdepends="xkeyboard-config"
 short_desc="XLibre fork of X.Org X xserver"
 maintainer="tmp <tmp@tmp.com>"
