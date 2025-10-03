@@ -54,56 +54,53 @@ pre_configure()
     esac
 }
 
-post_install()
-{
-    vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
-    vlicense COPYING
-    chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
-    find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
-    pkg_install()
-    {
-        vmove usr/lib/xorg/protocol.txt
-    }
+post_install() {
+   vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
+   vlicense COPYING
+   chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
+   find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
 }
-
-xlibre-server-xnest_package()
-{
-    short_desc="Nested X server that runs as an X application"
-    pkg_install()
-    {
-        vmove usr/bin/Xnest
-        vmove usr/share/man/man1/Xnest.1
-    }
+xlibre-xserver-xnest_package() {
+   short_desc="Nested X xserver that runs as an X application"
+   pkg_install() {
+   vmove usr/bin/Xnest
+   vmove usr/share/man/man1/Xnest.1
 }
-
-xlibre-server-xephyr_package()
-{
-    short_desc="X server outputting to a window on a pre-existing X display"
-    pkg_install()
-    {
-        vmove usr/bin/Xephyr
-        vmove usr/share/man/man1/Xephyr.1
-    }
 }
-
-xlibre-server-xvfb_package()
-{
-    short_desc="Virtual framebuffer X server"
+xlibre-xserver-xephyr_package() {
+   short_desc="X xserver outputting to a window on a pre-existing X display"
+   pkg_install() {
+   vmove usr/bin/Xephyr
+   vmove usr/share/man/man1/Xephyr.1
+}
+}
+xlibre-xserver-xvfb_package() {
+    short_desc="Virtual framebuffer X xserver"
     depends="xkeyboard-config"
-    pkg_install()
-    {
-        vmove usr/bin/Xvfb
-        vmove usr/share/man/man1/Xvfb.1
-    }
+    license="MIT GPL-2.0-or-later"
+    pkg_install() {
+    vmove usr/bin/Xvfb
+    vmove usr/share/man/man1/Xvfb.1
+    vinstall "${FILESDIR}/xvfb-run" 755 usr/bin
+    vinstall "${FILESDIR}/xvfb-run.1" 644 usr/share/man/man1
 }
-
-# xlibre-server-devel_package() {
-#     depends="${makedepends}"
-#     short_desc+=" - development files"
-#     pkg_install() {
-#         vmove usr/include
-#         vmove usr/lib/pkgconfig
-#         vmove usr/share/aclocal
-#     }
-# }
+}
+xlibre-xserver-common_package() {
+   short_desc+="- common files"
+   depends="xkeyboard-config"
+   pkg_install() {
+   vmove usr/lib/xorg/protocol.txt
+   vmove usr/share/man/man1/Xserver.1
+   vinstall "${wrksrc}/xkb/README.compiled" 644 var/lib/xkb
+}
+}
+xlibre-xserver-devel_package() {
+    depends="${makedepends}"
+    short_desc+=" - development files"
+    pkg_install() {
+    vmove usr/include
+    vmove usr/lib/pkgconfig
+    vmove usr/share/aclocal
+  }
+}
 
