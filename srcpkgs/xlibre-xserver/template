@@ -33,68 +33,77 @@ replaces="xf86-video-modesetting>=0 glamor-egl>=0"
 conf_files="/etc/X11/Xwrapper.config"
 build_options="elogind"
 desc_option_elogind="Rootless XLibre support with elogind"
+lib32disabled=yes
+
 # disable VBE on non-x86 systems
 case "$XBPS_TARGET_MACHINE" in
-x86_64*|i686*) configure_args+=" -Dint10=x86emu" ;;
-*) configure_args+=" -Dint10=false" ;;
+    x86_64*|i686*) configure_args+=" -Dint10=x86emu" ;;
+    *) configure_args+=" -Dint10=false" ;;
 esac
+
 # Symbols must be resolved lazily for modules to work.
 # See https://bugs.freedesktop.org/show_bug.cgi?id=41208#c5
 LDFLAGS="-Wl,-z,lazy"
-pre_configure() {
-case "$XBPS_TARGET_MACHINE" in
-*-musl)
-export CFLAGS+=" -D__uid_t=uid_t -D__gid_t=gid_t"
-;;
-esac
-}
-post_install() {
-vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
-vlicense COPYING
-chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
-find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
+
+pre_configure()
+{
+    case "$XBPS_TARGET_MACHINE" in
+    *-musl)
+        export CFLAGS+=" -D__uid_t=uid_t -D__gid_t=gid_t"
+        ;;
+    esac
 }
 
-xlibre-xserver-xnest_package() {
-short_desc="Nested X xserver that runs as an X application"
-pkg_install() {
-vmove usr/bin/Xnest
-vmove usr/share/man/man1/Xnest.1
+post_install()
+{
+    vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
+    vlicense COPYING
+    chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
+    find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
+    pkg_install()
+    {
+        vmove usr/lib/xorg/protocol.txt
+    }
 }
+
+xlibre-server-xnest_package()
+{
+    short_desc="Nested X server that runs as an X application"
+    pkg_install()
+    {
+        vmove usr/bin/Xnest
+        vmove usr/share/man/man1/Xnest.1
+    }
 }
-xlibre-xserver-xephyr_package() {
-short_desc="X xserver outputting to a window on a pre-existing X display"
-pkg_install() {
-vmove usr/bin/Xephyr
-vmove usr/share/man/man1/Xephyr.1
+
+xlibre-server-xephyr_package()
+{
+    short_desc="X server outputting to a window on a pre-existing X display"
+    pkg_install()
+    {
+        vmove usr/bin/Xephyr
+        vmove usr/share/man/man1/Xephyr.1
+    }
 }
+
+xlibre-server-xvfb_package()
+{
+    short_desc="Virtual framebuffer X server"
+    depends="xkeyboard-config"
+    pkg_install()
+    {
+        vmove usr/bin/Xvfb
+        vmove usr/share/man/man1/Xvfb.1
+    }
 }
-xlibre-xserver-xvfb_package() {
-short_desc="Virtual framebuffer X xserver"
-depends="xkeyboard-config"
-license="MIT GPL-2.0-or-later"
-pkg_install() {
-vmove usr/bin/Xvfb
-vmove usr/share/man/man1/Xvfb.1
-vinstall "${FILESDIR}/xvfb-run" 755 usr/bin
-vinstall "${FILESDIR}/xvfb-run.1" 644 usr/share/man/man1
-}
-}
-xlibre-xserver-common_package() {
-short_desc+="- common files"
-depends="xkeyboard-config"
-pkg_install() {
-vmove usr/lib/xorg/protocol.txt
-vmove usr/share/man/man1/Xserver.1
-vinstall "${wrksrc}/xkb/README.compiled" 644 var/lib/xkb
-}
-}
-xlibre-xserver-devel_package() {
-depends="${makedepends}"
-short_desc+=" - development files"
-pkg_install() {
-vmove usr/include
-vmove usr/lib/pkgconfig
-vmove usr/share/aclocal
-}
-}
+
+# xlibre-server-devel_package() {
+#     depends="${makedepends}"
+#     short_desc+=" - development files"
+#     pkg_install() {
+#         vmove usr/include
+#         vmove usr/lib/pkgconfig
+#         vmove usr/share/aclocal
+#     }
+# }
+
