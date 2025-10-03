@@ -10,30 +10,33 @@ configure_args="-Dipv6=true -Dxorg=true -Dxnest=true -Dxephyr=true
  -Dxcsecurity=true -Dsystemd_logind=$(vopt_if elogind true false)
  -Dglamor=true -Ddri2=true -Ddri3=true -Dglx=true -Ddtrace=false -Dlibunwind=true"
 hostmakedepends="pkg-config xkbcomp flex"
-makedepends="MesaLib-devel libXaw-devel libXfont2-devel
+makedepends="xorgproto xtrans MesaLib-devel libXaw-devel libXfont2-devel
  libXrender-devel libXres-devel libXtst-devel libXv-devel libXxf86dga-devel
  libdmx-devel libepoxy-devel openssl-devel libtirpc-devel libxkbfile-devel
  libxkbui-devel libxshmfence-devel pixman-devel xcb-util-image-devel
  xcb-util-keysyms-devel xcb-util-renderutil-devel xcb-util-wm-devel xkbcomp
  nettle-devel libxcvt-devel font-util libunwind-devel libpciaccess-devel libXdmcp-devel
  $(vopt_if elogind 'dbus-devel')"
-# See hw/xfree86/common/xf86Module.h. Only care for the major version.
 depends="xkeyboard-config $(vopt_if elogind 'elogind')"
 checkdepends="xkeyboard-config"
 short_desc="XLibre fork of X.Org X xserver"
-maintainer="tmp <tmp@tmp.com>"
-license="MIT, BSD-3-Clause"
+maintainer="Your Name <youremail@example.com>" # TODO: Update maintainer
+license="LicenseRef-Adobe-Display-PostScript AND BSD-3-Clause AND LicenseRef-DEC-3-Clause AND HPND AND LicenseRef-HPND-sell-MIT-disclaimer-xserver AND HPND-sell-variant AND ICU AND ISC AND MIT AND MIT-open-group AND NTP AND SGI-B-2.0 AND SMLNJ AND X11 AND X11-distribute-modifications-variant"
 homepage="https://github.com/X11Libre/xserver"
-distfiles="https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-${version}.tar.gz"
-checksum=32c5760681cbfbc3b8a605a18588c9c5dd721aecf40acc140fbe8b4f765c4e13
-lib32disabled=yes
-provides="xserver-abi-extension-11_0 xserver-abi-input-26_0
- xserver-abi-video-28_0 xf86-video-modesetting-1_1"
+distfiles="https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-${version}.tar.gz
+ https://src.fedoraproject.org/rpms/xorg-x11-server/raw/rawhide/f/xvfb-run>xvfb-run
+ https://src.fedoraproject.org/rpms/xorg-x11-server/raw/rawhide/f/xvfb-run.1>xvfb-run.1"
+checksum="32c5760681cbfbc3b8a605a18588c9c5dd721aecf40acc140fbe8b4f765c4e13
+ 27ce50f4432e5549e662db857118761fa9cd74c6900aac52c4db768c956838db
+ 2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776"
+provides="xorg-server-${version}_${revision} x-server-${version}_${revision} xserver-abi-extension-11_0 xserver-abi-input-26_0 xserver-abi-video-28_0"
+conflicts="xorg-server xorg-server-common<25.0.0.0 nvidia-utils<=331.20 glamor-egl xf86-video-modesetting"
 replaces="xf86-video-modesetting>=0 glamor-egl>=0"
 conf_files="/etc/X11/Xwrapper.config"
 build_options="elogind"
 desc_option_elogind="Rootless XLibre support with elogind"
 lib32disabled=yes
+nodebug=yes
 
 # disable VBE on non-x86 systems
 case "$XBPS_TARGET_MACHINE" in
@@ -45,8 +48,7 @@ esac
 # See https://bugs.freedesktop.org/show_bug.cgi?id=41208#c5
 LDFLAGS="-Wl,-z,lazy"
 
-pre_configure()
-{
+pre_configure() {
     case "$XBPS_TARGET_MACHINE" in
     *-musl)
         export CFLAGS+=" -D__uid_t=uid_t -D__gid_t=gid_t"
@@ -55,54 +57,71 @@ pre_configure()
 }
 
 post_install() {
-   vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
-   vlicense COPYING
-   chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
-   find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
+    vmkdir etc/X11/xorg.conf.d
+    vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
+    vlicense COPYING
+    chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
 }
 
-xlibre-xserver-xnest_package() {
-    short_desc="Nested X server that runs as an X application"
-    pkg_install()
-    {
-        vmove usr/bin/Xnest
-        vmove usr/share/man/man1/Xnest.1
+xlibre-xserver-common_package() {
+    short_desc+="XLibre fork of X.Org Xorg server common files"
+    depends="xkeyboard-config xkbcomp setxkbmap"
+    provides="xorg-server-common-${version}_${revision}"
+    conflicts="xorg-server-common"
+    pkg_install() {
+        vlicense COPYING
+        vmove usr/lib/xorg/protocol.txt
+        vman usr/share/man/man1/Xserver.1
     }
 }
 
 xlibre-xserver-xephyr_package() {
-   short_desc="X server outputting to a window on a pre-existing X display"
-   pkg_install() 
-   {
-   vmove usr/bin/Xephyr
-   vmove usr/share/man/man1/Xephyr.1
-   }
-}
-
-xlibre-xserver-xvfb_package() {
-    short_desc="Virtual framebuffer X server"
-    depends="xkeyboard-config"
-    pkg_install()
-    {
-        vmove usr/bin/Xvfb
-        vmove usr/share/man/man1/Xvfb.1
+    short_desc="XLibre fork of X.Org nested X server that runs as an X application"
+    depends="xlibre-xserver-common xserver-abi-input-26_0 libXfont2 libglvnd libepoxy libunwind xcb-util-image xcb-util-renderutil xcb-util-wm xcb-util-keysyms pixman nettle libtirpc xcb-util libXdmcp libX11 libXau libxshmfence"
+    provides="xorg-server-xephyr-${version}_${revision}"
+    conflicts="xorg-server-xephyr"
+    pkg_install() {
+        vlicense COPYING
+        vmove usr/bin/Xephyr
+        vman usr/share/man/man1/Xephyr.1
     }
 }
 
-xlibre-xserver-common_package() {
-  	short_desc+="- common files"
-  	pkg_install() {
-  		vmove usr/lib/xorg/protocol.txt
-  	}
+xlibre-xserver-xvfb_package() {
+    short_desc="XLibre fork of X.Org virtual framebuffer X server"
+    depends="xlibre-xserver-common xserver-abi-input-26_0 libXfont2 libunwind pixman xauth libglvnd nettle libtirpc libXdmcp libXau"
+    provides="xorg-server-xvfb-${version}_${revision}"
+    conflicts="xorg-server-xvfb"
+    pkg_install() {
+        vlicense COPYING
+        vmove usr/bin/Xvfb
+        vman usr/share/man/man1/Xvfb.1
+        vbin ../xvfb-run
+        vman ../xvfb-run.1
+    }
+}
+
+xlibre-xserver-xnest_package() {
+    short_desc="XLibre fork of X.Org nested X server that runs as an X application"
+    depends="xlibre-xserver-common xserver-abi-input-26_0 libXfont2 libunwind libXext pixman nettle libtirpc libXdmcp libX11 libXau"
+    provides="xorg-server-xnest-${version}_${revision}"
+    conflicts="xorg-server-xnest"
+    pkg_install() {
+        vlicense COPYING
+        vmove usr/bin/Xnest
+        vman usr/share/man/man1/Xnest.1
+    }
 }
 
 xlibre-xserver-devel_package() {
-    depends="${makedepends}"
-   	short_desc+=" - development files"
-   	pkg_install() {
-   		vmove usr/include
-   		vmove usr/lib/pkgconfig
-   		vmove usr/share/aclocal
-	   }
+    depends="xlibre-xserver xserver-abi-input-26_0 xorgproto MesaLib-devel libpciaccess pixman xorg-util-macros"
+    short_desc+="XLibre fork of X.Org development files for the X.Org X server"
+    provides="xorg-server-devel-${version}_${revision}"
+    conflicts="xorg-server-devel"
+    pkg_install() {
+        vlicense COPYING
+        vmove usr/include/xorg/*
+        vmove usr/lib/pkgconfig/xorg-server.pc
+        vmove usr/share/aclocal/xorg-server.m4
+    }
 }
-
