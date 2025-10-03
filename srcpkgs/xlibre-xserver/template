@@ -51,17 +51,17 @@ esac
 post_install() {
 vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
 vlicense COPYING
-chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
+chmod 4755 ${DESTDIR}/usr/libexec/.wrap
 find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
 
 vmsg "info" ">>> Closed source drivers - like those from Nvidia - might not have an updated ABI version to match xlibre-xserver."
-vmsg "info" ">>> To prevent problems with these drivers, create this file: /etc/X11/xorg.conf.d/xlibre.conf"
+vmsg "info" ">>> To prevent problems with these drivers, create this file: /etc/X11/.conf.d/xlibre.conf"
 cat <<EOF
 Section "ServerFlags"
     Option "IgnoreABI" "true"
 EndSection
 EOF
-vmsg "info" ">>> It is required to replace all installed xf86* xorg driver and xorg-xserver* packages with their xlibre* counterparts."
+vmsg "info" ">>> It is required to replace all installed xf86*  driver and -xserver* packages with their xlibre* counterparts."
 vmsg "info" ">>> If for example xf86-video-intel is installed, this should be replaced with xlibre-xf86-video-intel."
 }
 xlibre-xserver-xnest_package() {
@@ -80,7 +80,7 @@ vmove usr/share/man/man1/Xephyr.1
 }
 xlibre-xserver-xvfb_package() {
 short_desc="Virtual framebuffer X xserver"
-depends="xkeyboard-config xorg-xauth"
+depends="xkeyboard-config"
 license="MIT GPL-2.0-or-later"
 pkg_install() {
 vmove usr/bin/Xvfb
