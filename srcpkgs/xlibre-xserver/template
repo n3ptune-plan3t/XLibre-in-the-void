@@ -20,7 +20,7 @@ makedepends="MesaLib-devel libXaw-devel libXfont2-devel
 # See hw/xfree86/common/xf86Module.h. Only care for the major version.
 depends="xlibre-xserver-common xkeyboard-config $(vopt_if elogind 'elogind')"
 checkdepends="xkeyboard-config"
-short_desc="XLibre fork of X.Org X server"
+short_desc="XLibre fork of X.Org X xserver"
 maintainer="tmp <tmp@tmp.com>"
 license="MIT, BSD-3-Clause"
 homepage="https://github.com/X11Libre/xserver"
@@ -54,33 +54,33 @@ vlicense COPYING
 chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
 find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
 
-vmsg "info" ">>> Closed source drivers - like those from Nvidia - might not have an updated ABI version to match xlibre-server."
+vmsg "info" ">>> Closed source drivers - like those from Nvidia - might not have an updated ABI version to match xlibre-xserver."
 vmsg "info" ">>> To prevent problems with these drivers, create this file: /etc/X11/xorg.conf.d/xlibre.conf"
 cat <<EOF
 Section "ServerFlags"
     Option "IgnoreABI" "true"
 EndSection
 EOF
-vmsg "info" ">>> It is required to replace all installed xf86* xorg driver and xorg-server* packages with their xlibre* counterparts."
+vmsg "info" ">>> It is required to replace all installed xf86* xorg driver and xorg-xserver* packages with their xlibre* counterparts."
 vmsg "info" ">>> If for example xf86-video-intel is installed, this should be replaced with xlibre-xf86-video-intel."
 }
-xlibre-server-xnest_package() {
-short_desc="Nested X server that runs as an X application"
+xlibre-xserver-xnest_package() {
+short_desc="Nested X xserver that runs as an X application"
 pkg_install() {
 vmove usr/bin/Xnest
 vmove usr/share/man/man1/Xnest.1
 }
 }
-xlibre-server-xephyr_package() {
-short_desc="X server outputting to a window on a pre-existing X display"
+xlibre-xserver-xephyr_package() {
+short_desc="X xserver outputting to a window on a pre-existing X display"
 pkg_install() {
 vmove usr/bin/Xephyr
 vmove usr/share/man/man1/Xephyr.1
 }
 }
-xlibre-server-xvfb_package() {
-short_desc="Virtual framebuffer X server"
-depends="xlibre-server-common xkeyboard-config xorg-xauth"
+xlibre-xserver-xvfb_package() {
+short_desc="Virtual framebuffer X xserver"
+depends="xlibre-xserver-common xkeyboard-config xorg-xauth"
 license="MIT GPL-2.0-or-later"
 pkg_install() {
 vmove usr/bin/Xvfb
@@ -89,7 +89,7 @@ vinstall "${FILESDIR}/xvfb-run" 755 usr/bin
 vinstall "${FILESDIR}/xvfb-run.1" 644 usr/share/man/man1
 }
 }
-xlibre-server-common_package() {
+xlibre-xserver-common_package() {
 short_desc+="- common files"
 depends="xkeyboard-config"
 pkg_install() {
@@ -98,7 +98,7 @@ vmove usr/share/man/man1/Xserver.1
 vinstall "${wrksrc}/xkb/README.compiled" 644 var/lib/xkb
 }
 }
-xlibre-server-devel_package() {
+xlibre-xserver-devel_package() {
 depends="${makedepends}"
 short_desc+=" - development files"
 pkg_install() {
