@@ -1,0 +1,30 @@
+# Template file for 'xlibre-xf86-video-intel'
+pkgname=xlibre-xf86-video-intel
+version=3.0.0.4
+revision=1
+archs="x86_64*"
+build_style=gnu-configure
+configure_args="--with-default-dri=3"
+hostmakedepends="git automake libtool pkg-config xorg-util-macros"
+makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
+ libXrandr-devel libXvMC-devel libXtst-devel xlibre-xserver-devel"
+depends="virtual?xserver-abi-video-28_0 mesa-dri"
+conflicts="xf86-video-intel" "xf86-video-intel-dbg"
+short_desc="Libre fork of X.Org Intel i810/i830/i915/945G/G965+ video drivers"
+maintainer="tmp <tmp@tmp.com>"
+license="MIT"
+homepage="https://github.com/X11Libre/xf86-video-intel"
+distfiles="${homepage}/archive/refs/tags/${pkgname}-${version}.tar.gz"
+checksum=892482d79e5e16a3e312a52e863a5c8d5cd858626d6e988a459b2bec22b2472d
+lib32disabled=yes
+
+CFLAGS="-fcommon"
+LDFLAGS="-Wl,-z,lazy"
+
+pre_configure() {
+	NOCONFIGURE=1 ./autogen.sh
+}
+
+post_install() {
+	vlicense COPYING
+}
