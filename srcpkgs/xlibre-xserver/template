@@ -51,9 +51,8 @@ esac
 post_install() {
 vinstall ${FILESDIR}/Xwrapper.config 644 etc/X11
 vlicense COPYING
-chmod 4755 ${DESTDIR}/usr/libexec/.wrap
+chmod 4755 ${DESTDIR}/usr/libexec/Xorg.wrap
 find "${DESTDIR}"/usr/share/man -type f -iname '*[1-5].gz' -exec gunzip '{}' \;
-
 vmsg "info" ">>> Closed source drivers - like those from Nvidia - might not have an updated ABI version to match xlibre-xserver."
 vmsg "info" ">>> To prevent problems with these drivers, create this file: /etc/X11/.conf.d/xlibre.conf"
 cat <<EOF
@@ -64,6 +63,7 @@ EOF
 vmsg "info" ">>> It is required to replace all installed xf86*  driver and -xserver* packages with their xlibre* counterparts."
 vmsg "info" ">>> If for example xf86-video-intel is installed, this should be replaced with xlibre-xf86-video-intel."
 }
+
 xlibre-xserver-xnest_package() {
 short_desc="Nested X xserver that runs as an X application"
 pkg_install() {
