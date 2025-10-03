@@ -23,7 +23,7 @@ short_desc="XLibre fork of X.Org X xserver"
 maintainer="Your Name <youremail@example.com>" # TODO: Update maintainer
 license="LicenseRef-Adobe-Display-PostScript AND BSD-3-Clause AND LicenseRef-DEC-3-Clause AND HPND AND LicenseRef-HPND-sell-MIT-disclaimer-xserver AND HPND-sell-variant AND ICU AND ISC AND MIT AND MIT-open-group AND NTP AND SGI-B-2.0 AND SMLNJ AND X11 AND X11-distribute-modifications-variant"
 homepage="https://github.com/X11Libre/xserver"
-distfiles="https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-${version}.tar.gz
+distfiles="https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-${version}.tar.gz"
 checksum="32c5760681cbfbc3b8a605a18588c9c5dd721aecf40acc140fbe8b4f765c4e13"
 provides="xorg-server-${version}_${revision} x-server-${version}_${revision} xserver-abi-extension-11_0 xserver-abi-input-26_0 xserver-abi-video-28_0"
 conflicts="xorg-server xorg-server-common<25.0.0.0 nvidia-utils<=331.20 glamor-egl xf86-video-modesetting"
