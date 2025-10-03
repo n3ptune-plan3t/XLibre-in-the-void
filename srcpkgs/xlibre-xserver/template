@@ -67,7 +67,6 @@ xlibre-xserver-common_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/lib/xorg/protocol.txt
-        vman usr/share/man/man1/Xserver.1
     }
 }
 
