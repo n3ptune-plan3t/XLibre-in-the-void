@@ -1,0 +1,45 @@
+# .github/workflows/build.yml
+
+name: Manual Build and Release
+
+# This allows the workflow to be run manually from the Actions tab
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.2.3)'
+        required: true
+        default: '25.0.0.12'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out your repository's code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the Void Linux packaging environment
+      - name: Setup xbps-src environment
+        run: |
+          git clone --depth=1 https://github.com/void-linux/void-packages.git
+          cd void-packages
+          ./xbps-src binary-bootstrap
+          # Copy your package source code into the build directory
+          cp -r ../* srcpkgs/xlibre-xserver/
+        
+      # Step 3: Build the .xbps package
+      - name: Build the package
+        run: |
+          cd void-packages
+          ./xbps-src pkg xlibre-xserver
+      
+      # Step 4: Create a GitHub Release and upload the package
+      - name: Create Release and Upload Artifact
+        uses: softprops/action-gh-release@v2
+        with:
+          # The tag and release name will be created from the version you input
+          tag_name: v${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          # Find the .xbps file in the output directory and upload it
+          files: void-packages/hostdir/binpkgs/*.xbps
