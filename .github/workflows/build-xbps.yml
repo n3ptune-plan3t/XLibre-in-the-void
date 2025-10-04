@@ -1,4 +1,4 @@
-name: Build and Release XLibre Packages
+name: Manual Build and Release XLibre Packages
 on:
   workflow_dispatch:
 jobs:
