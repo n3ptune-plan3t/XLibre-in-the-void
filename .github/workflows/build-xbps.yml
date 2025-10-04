@@ -1,45 +1,76 @@
-# .github/workflows/build.yml
-
-name: Manual Build and Release
-
-# This allows the workflow to be run manually from the Actions tab
+name: Build and Release XLibre Packages
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version (e.g., 1.2.3)'
-        required: true
-        default: '25.0.0.12'
-
 jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
+  build:
+    name: Build Packages 📦
+    runs-on: ubuntu-22.04
     steps:
-      # Step 1: Check out your repository's code
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Step 2: Set up the Void Linux packaging environment
-      - name: Setup xbps-src environment
+      - name: Clone void-packages
+        run: git clone --depth=1 https://github.com/void-linux/void-packages.git
+      - name: Install prerequisites
         run: |
-          git clone --depth=1 https://github.com/void-linux/void-packages.git
-          cd void-packages
+          sudo apt-get update
+          sudo apt-get install -y wget tar xz-utils ca-certificates
+      - name: Download and install XBPS static binaries
+        run: |
+          wget https://repo-default.voidlinux.org/static/xbps-static-latest.x86_64-musl.tar.xz
+          tar xvf xbps-static-latest.x86_64-musl.tar.xz
+          sudo install -Dm755 usr/bin/* /usr/local/bin/
+      - name: Cache XBPS hostdir
+        id: cache-hostdir
+        uses: actions/cache@v4
+        with:
+          path: void-packages/hostdir
+          key: xbps-hostdir-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('void-packages/xbps-src', 'void-packages/common/bootstrap/**', 'void-packages/srcpkgs/*.template') }}
+      - name: Bootstrap XBPS-src
+        if: steps.cache-hostdir.outputs.cache-hit != 'true'
+        working-directory: void-packages
+        run: |
+          export XBPS_ARCH=x86_64
           ./xbps-src binary-bootstrap
-          # Copy your package source code into the build directory
-          cp -r ../* srcpkgs/xlibre-xserver/
-        
-      # Step 3: Build the .xbps package
-      - name: Build the package
+      - name: Copy templates
         run: |
-          cd void-packages
-          ./xbps-src pkg xlibre-xserver
-      
-      # Step 4: Create a GitHub Release and upload the package
-      - name: Create Release and Upload Artifact
+          # Copy only XLibre-related templates to avoid conflicts
+          mkdir -p void-packages/srcpkgs
+          cp -r srcpkgs/* void-packages/srcpkgs/ 2>/dev/null || true
+      - name: Allow restricted packages
+        working-directory: void-packages
+        run: echo XBPS_ALLOW_RESTRICTED=yes >> etc/conf
+      - name: Build xlibre-xserver
+        working-directory: void-packages
+        run: ./xbps-src pkg xlibre-xserver
+      - name: Build drivers
+        working-directory: void-packages
+        run: |
+          for dir in srcpkgs/xlibre-xf86-video-*; do
+            if [ -d "$dir" ]; then
+              pkg=$(basename "$dir")
+              echo "Building $pkg"
+              ./xbps-src pkg "$pkg" || echo "Failed to build $pkg"
+            fi
+          done
+      - name: Upload built packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: xlibre-packages
+          path: void-packages/hostdir/binpkgs/*.xbps
+  release:
+    name: Create GitHub Release 🚀
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download built packages from artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xlibre-packages
+      - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
-          # The tag and release name will be created from the version you input
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release ${{ github.event.inputs.version }}
-          # Find the .xbps file in the output directory and upload it
-          files: void-packages/hostdir/binpkgs/*.xbps
+          files: "*.xbps"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
