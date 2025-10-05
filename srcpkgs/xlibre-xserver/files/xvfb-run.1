@@ -1,0 +1,17 @@
+# Template file for 'xvfb-run'
+pkgname=xvfb-run
+version=1.0
+revision=1
+depends="xorg-server-xvfb xauth coreutils"
+short_desc="Run specified X clients or commands in a virtual X server environment"
+maintainer="n3ptune-plan3t <your@email.com>"
+license="GPL-2.0-or-later"
+homepage="https://www.x.org"
+archs="noarch"
+
+do_install() {
+    # Install the script
+    vbin "${FILESDIR}/xvfb-run"
+    # Install the man page
+    vman "${FILESDIR}/xvfb-run.1"
+}
