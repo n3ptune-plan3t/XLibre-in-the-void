@@ -2,29 +2,67 @@
 pkgname=xlibre-xf86-video-intel
 version=3.0.0.4
 revision=1
-archs="x86_64*"
 build_style=gnu-configure
-configure_args="--with-default-dri=3"
-hostmakedepends="git automake libtool pkg-config xorg-util-macros"
+configure_args="--with-default-dri=3 --libexecdir=/usr/lib"
+hostmakedepends="git automake libtool pkg-config xorg-util-macros
+ binutils gcc gettext gzip make"
 makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
- libXrandr-devel libXvMC-devel libXtst-devel xlibre-xserver-devel"
-depends="virtual?xserver-abi-video-28_0 mesa-dri"
-conflicts="xf86-video-intel" "xf86-video-intel-dbg"
+ libXrandr-devel libXvMC-devel libXtst-devel xlibre-xserver-devel
+ pixman-devel xcb-util-devel libxcb-devel libxshmfence-devel libdrm-devel
+ libxrender-devel libx11-devel libxdamage-devel libpciaccess-devel
+ mesa-devel"
+depends="virtual?xserver-abi-video-28_0 mesa-dri libXvMC pixman xcb-util
+ libxcb libxfixes libxshmfence libdrm libxrender libx11 libxdamage
+ libxext libpciaccess"
+checkdepends="make"
 short_desc="Libre fork of X.Org Intel i810/i830/i915/945G/G965+ video drivers"
 maintainer="tmp <tmp@tmp.com>"
 license="MIT"
 homepage="https://github.com/X11Libre/xf86-video-intel"
 distfiles="${homepage}/archive/refs/tags/${pkgname}-${version}.tar.gz"
 checksum=892482d79e5e16a3e312a52e863a5c8d5cd858626d6e988a459b2bec22b2472d
-lib32disabled=yes
+conflicts="xf86-video-intel xf86-video-intel-dbg"
+archs="x86_64* aarch64*"
 
-CFLAGS="-fcommon"
-LDFLAGS="-Wl,-z,lazy"
+# Build options
+lib32disabled=yes
+nodebug=yes
+nolto=yes
+
+case "$XBPS_TARGET_MACHINE" in
+    x86_64*)
+        CFLAGS+=" -march=x86-64"
+        ;;
+    aarch64*)
+        CFLAGS+=" -march=armv8-a"
+        ;;
+esac
+
+# Security hardening flags
+CFLAGS+=" -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3"
+CFLAGS+=" -Wformat -Werror=format-security -fstack-clash-protection"
+CFLAGS+=" -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fno-lto"
+
+if [ "$XBPS_TARGET_MACHINE" != "aarch64" ]; then
+    CFLAGS+=" -fcf-protection"
+fi
+
+LDFLAGS+=" -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy"
+LDFLAGS+=" -Wl,-z,relro -Wl,-z,pack-relative-relocs -fno-lto"
 
 pre_configure() {
-	NOCONFIGURE=1 ./autogen.sh
+    NOCONFIGURE=1 ./autogen.sh
+}
+
+pre_build() {
+    # Ensure proper CFLAGS are used
+    sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+}
+
+do_check() {
+    make check
 }
 
 post_install() {
-	vlicense COPYING
+    vlicense COPYING
 }
