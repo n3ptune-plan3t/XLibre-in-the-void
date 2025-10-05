@@ -33,9 +33,6 @@ case "$XBPS_TARGET_MACHINE" in
     x86_64*)
         CFLAGS+=" -march=x86-64"
         ;;
-    i686*)
-        CFLAGS+=" -march=i686"
-        ;;
     aarch64*)
         CFLAGS+=" -march=armv8-a"
         ;;
