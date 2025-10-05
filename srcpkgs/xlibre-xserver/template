@@ -92,7 +92,6 @@ xlibre-xserver-common_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/lib/xorg/protocol.txt
-        vman usr/share/man/man1/Xserver.1
     }
 }
 
@@ -104,7 +103,6 @@ xlibre-xserver-xephyr_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/bin/Xephyr
-        vman usr/share/man/man1/Xephyr.1
     }
 }
 
@@ -116,7 +114,6 @@ xlibre-xserver-xvfb_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/bin/Xvfb
-        vman usr/share/man/man1/Xvfb.1
         vinstall ${FILESDIR}/xvfb-run 755 usr/bin
         vinstall ${FILESDIR}/xvfb-run.1 644 usr/share/man/man1
     }
@@ -130,7 +127,6 @@ xlibre-xserver-xnest_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/bin/Xnest
-        vman usr/share/man/man1/Xnest.1
     }
 }
 
