@@ -1,0 +1,65 @@
+name: Build XLibre Drivers
+
+on:
+  push:
+    paths:
+      - 'srcpkgs/xlibre-xf86-*/**'
+  pull_request:
+    paths:
+      - 'srcpkgs/xlibre-xf86-*/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout XLibre-in-the-void
+        uses: actions/checkout@v4
+        with:
+          path: xlibre
+
+      - name: Checkout void-packages
+        uses: actions/checkout@v4
+        with:
+          repository: void-linux/void-packages
+          path: void-packages
+
+      - name: Setup build environment
+        run: |
+          # Install basic requirements
+          sudo apt-get update
+          sudo apt-get install -y curl git
+
+          # Bootstrap void-packages
+          cd void-packages
+          ./xbps-src binary-bootstrap
+          # Install development requirements
+          ./xbps-src install -y base-devel
+
+      - name: Copy XLibre templates
+        run: |
+          # Copy all xlibre-xf86-* templates to void-packages
+          cp -r xlibre/srcpkgs/xlibre-xf86-* void-packages/srcpkgs/
+          # Also copy xlibre-xserver and its subpackages as they are dependencies
+          cp -r xlibre/srcpkgs/xlibre-xserver* void-packages/srcpkgs/
+
+      - name: Build packages
+        run: |
+          cd void-packages
+          # Build xlibre-xserver first as it's a dependency
+          ./xbps-src pkg xlibre-xserver
+          
+          # Build all xlibre-xf86-* packages
+          for pkg in $(ls ../xlibre/srcpkgs/ | grep 'xlibre-xf86-'); do
+            echo "Building $pkg..."
+            ./xbps-src pkg $pkg
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: xlibre-drivers
+          path: |
+            void-packages/hostdir/binpkgs
+            void-packages/hostdir/binpkgs/*.xbps
+          retention-days: 7
