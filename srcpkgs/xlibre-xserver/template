@@ -97,7 +97,7 @@ xlibre-xserver-common_package() {
 }
 
 xlibre-xserver_package() {
-    depends+=" libdrm libgl"  # Add these additional dependencies
+    depends+=" libdrm libglvnd"  # Add these additional dependencies
     provides+=" xserver-abi-videodrv-28_0 xserver-abi-input-26_0 xserver-abi-extension-11_0"
 }
 
