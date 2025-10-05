@@ -17,6 +17,10 @@ case "$XBPS_TARGET_MACHINE" in
         CFLAGS+=" -march=x86-64"
         configure_args+=" -Dint10=x86emu"
         ;;
+    i686*)
+        CFLAGS+=" -march=i686"
+        configure_args+=" -Dint10=x86emu"
+        ;;
     aarch64*)
         CFLAGS+=" -march=armv8-a"
         configure_args+=" -Dint10=false"
@@ -40,7 +44,7 @@ makedepends="xorgproto xtrans MesaLib-devel libXaw-devel libXfont2-devel
  libxkbui-devel libxshmfence-devel pixman-devel xcb-util-image-devel
  xcb-util-keysyms-devel xcb-util-renderutil-devel xcb-util-wm-devel xkbcomp
  nettle-devel libxcvt-devel font-util libunwind-devel libpciaccess-devel
- libXdmcp-devel xvfb-run libdrm-devel libX11-devel libXext-devel libXmu-devel
+ libXdmcp-devel xvfb-run libdrm-devel libX11-devel libXext-devel libXmu-devel libglvnd-devel
  $(vopt_if elogind 'dbus-devel')"
 
 depends="xkeyboard-config $(vopt_if elogind 'elogind')"
@@ -51,7 +55,7 @@ license="LicenseRef-Adobe-Display-PostScript AND BSD-3-Clause AND LicenseRef-DEC
 homepage="https://github.com/X11Libre/xserver"
 distfiles="https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-${version}.tar.gz"
 checksum="32c5760681cbfbc3b8a605a18588c9c5dd721aecf40acc140fbe8b4f765c4e13"
-provides="xorg-server-${version}_${revision} x-server-${version}_${revision} xserver-abi-extension-11_0 xserver-abi-input-26_0 xserver-abi-video-28_0"
+provides="xorg-server-${version}_${revision} x-server-${version}_${revision} xserver-abi-videodrv-28_0 xserver-abi-extension-11_0 xserver-abi-input-26_0 xserver-abi-video-28_0"
 conflicts="xorg-server xorg-server-common<25.0.0.0 nvidia-utils<=331.20 glamor-egl xf86-video-modesetting"
 replaces="xf86-video-modesetting>=0 glamor-egl>=0"
 conf_files="/etc/X11/Xwrapper.config"
@@ -60,11 +64,6 @@ desc_option_elogind="Rootless XLibre support with elogind"
 lib32disabled=yes
 nodebug=yes
 
-# disable VBE on non-x86 systems
-#case "$XBPS_TARGET_MACHINE" in
-#    x86_64*|i686*) configure_args+=" -Dint10=x86emu" ;;
-#    *) configure_args+=" -Dint10=false" ;;
-#esac
 
 # Symbols must be resolved lazily for modules to work.
 # See https://bugs.freedesktop.org/show_bug.cgi?id=41208#c5
@@ -93,12 +92,8 @@ xlibre-xserver-common_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/lib/xorg/protocol.txt
+        vman usr/share/man/man1/Xserver.1
     }
-}
-
-xlibre-xserver_package() {
-    depends+=" libdrm libglvnd"  # Add these additional dependencies
-    provides+=" xserver-abi-videodrv-28_0 xserver-abi-input-26_0 xserver-abi-extension-11_0"
 }
 
 xlibre-xserver-xephyr_package() {
@@ -109,6 +104,7 @@ xlibre-xserver-xephyr_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/bin/Xephyr
+        vman usr/share/man/man1/Xephyr.1
     }
 }
 
@@ -120,6 +116,7 @@ xlibre-xserver-xvfb_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/bin/Xvfb
+        vman usr/share/man/man1/Xvfb.1
         vinstall ${FILESDIR}/xvfb-run 755 usr/bin
         vinstall ${FILESDIR}/xvfb-run.1 644 usr/share/man/man1
     }
@@ -133,6 +130,7 @@ xlibre-xserver-xnest_package() {
     pkg_install() {
         vlicense COPYING
         vmove usr/bin/Xnest
+        vman usr/share/man/man1/Xnest.1
     }
 }
 
