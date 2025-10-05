@@ -8,11 +8,11 @@ hostmakedepends="git automake libtool pkg-config xorg-util-macros
  binutils gcc gettext gzip make"
 makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
  libXrandr-devel libXvMC-devel libXtst-devel xlibre-xserver-devel
- pixman-devel xcb-util-devel libXcb-devel libXshmfence-devel libdrm-devel
+ pixman-devel xcb-util-devel libxcb-devel libxshmfence-devel libdrm-devel
  libXrender-devel libX11-devel libXdamage-devel libpciaccess-devel
- mesa-devel"
+ MesaLib-devel"
 depends="virtual?xserver-abi-video-28_0 mesa-dri libXvMC pixman xcb-util
- libXcb libXfixes libXshmfence libdrm libXrender libX11 libXdamage
+ libxcb libXfixes libxshmfence libdrm libXrender libX11 libXdamage
  libXext libpciaccess"
 checkdepends="make"
 short_desc="Libre fork of X.Org Intel i810/i830/i915/945G/G965+ video drivers"
