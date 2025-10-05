@@ -17,10 +17,6 @@ case "$XBPS_TARGET_MACHINE" in
         CFLAGS+=" -march=x86-64"
         configure_args+=" -Dint10=x86emu"
         ;;
-    i686*)
-        CFLAGS+=" -march=i686"
-        configure_args+=" -Dint10=x86emu"
-        ;;
     aarch64*)
         CFLAGS+=" -march=armv8-a"
         configure_args+=" -Dint10=false"
