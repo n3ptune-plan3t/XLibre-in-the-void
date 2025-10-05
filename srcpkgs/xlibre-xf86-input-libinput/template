@@ -1,0 +1,42 @@
+# Template file for 'xlibre-xf86-input-libinput'
+pkgname=xlibre-xf86-input-libinput
+version=1.5.1.0
+revision=1
+build_style=gnu-configure
+hostmakedepends="pkg-config autoconf automake libtool"
+makedepends="libinput-devel xlibre-xserver-devel libXi-devel libX11-devel xorgproto libXfont2-devel"
+depends="libinput virtual?xserver-abi-input-26_0"
+short_desc="XLibre fork of the generic input driver for the X.Org server based on libinput"
+maintainer="artist for XLibre <artist@xlibre.org>"
+license="MIT"
+homepage="https://github.com/X11Libre"
+distfiles="https://github.com/X11Libre/xf86-input-libinput/archive/refs/tags/${pkgname}-${version}.tar.gz"
+checksum=f1be5a443af78307af18103a6bb614021fe163380b0eb43dec820a2389fbd6c8
+wrksrc="xf86-input-libinput-${pkgname}-${version}"
+conflicts="xf86-input-libinput"
+provides="xf86-input-libinput"
+lib32disabled=yes
+
+pre_configure() {
+	case "$XBPS_TARGET_ARCH" in
+		x86_64) export CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fcf-protection -fno-plt" ;;
+		aarch64) export CFLAGS="-march=armv8-a -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" ;;
+		*) export CFLAGS="-march=native -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fcf-protection -fno-plt" ;;
+	esac
+	export CXXFLAGS="${CFLAGS} -Wp,-D_GLIBCXX_ASSERTIONS"
+	export LDFLAGS="-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy -Wl,-z,relro -Wl,-z,pack-relative-relocs -Wl,-z,now"
+}
+
+post_install() {
+	vlicense COPYING
+}
+
+xlibre-xf86-input-libinput-devel_package() {
+	lib32disabled=yes
+	depends="${makedepends}"
+	short_desc+=" - development files"
+	pkg_install() {
+		vmove usr/include
+		vmove usr/lib/pkgconfig
+	}
+}
