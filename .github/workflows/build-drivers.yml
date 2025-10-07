@@ -1,4 +1,5 @@
 name: Build XLibre Drivers
+
 on:
   workflow_dispatch:
 
@@ -48,15 +49,26 @@ jobs:
         working-directory: void-packages
         run: echo XBPS_ALLOW_RESTRICTED=yes >> etc/conf
 
-      # Build xlibre-xserver first as it's a dependency
-      - name: Build xlibre-xserver and its subpackages
+      # --- START OF CHANGES ---
+
+      - name: Cache xlibre-xserver package
+        id: cache-xserver
+        uses: actions/cache@v4
+        with:
+          # Cache the built binary packages for xserver and its subpackages
+          path: void-packages/hostdir/binpkgs/xlibre-xserver*.xbps
+          # The cache key is based on the hash of the template file
+          key: xserver-pkg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('void-packages/srcpkgs/xlibre-xserver/template') }}
+
+      - name: Build xlibre-xserver (if not cached)
+        if: steps.cache-xserver.outputs.cache-hit != 'true'
         working-directory: void-packages
         run: |
+          # Building the main package also builds its subpackages (-common, -devel)
           ./xbps-src pkg xlibre-xserver
-          ./xbps-src pkg xlibre-xserver-common
-          ./xbps-src pkg xlibre-xserver-devel
 
-      # Then build the drivers
+      # --- END OF CHANGES ---
+
       - name: Build XLibre drivers
         working-directory: void-packages
         run: |
@@ -64,6 +76,7 @@ jobs:
             if [ -d "$dir" ]; then
               pkg=$(basename "$dir")
               echo "Building $pkg"
+              # xbps-src will find the cached or newly built xserver dependency
               ./xbps-src pkg "$pkg" || {
                 echo "Failed to build $pkg"
                 exit 1
