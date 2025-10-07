@@ -18,6 +18,10 @@ provides="xf86-input-libinput"
 lib32disabled=yes
 
 pre_configure() {
+	# Generate the configure script
+	./autogen.sh --prefix=/usr
+
+	# The rest of your existing function
 	case "$XBPS_TARGET_ARCH" in
 		x86_64) export CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fcf-protection -fno-plt" ;;
 		aarch64) export CFLAGS="-march=armv8-a -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" ;;
