@@ -1,4 +1,4 @@
-name: Build XLibre Drivers
+name: Build XLibre Drivers M2
 
 on:
   workflow_dispatch:
