@@ -22,7 +22,7 @@ homepage="https://github.com/X11Libre/xf86-video-intel"
 distfiles="${homepage}/archive/refs/tags/${pkgname}-${version}.tar.gz"
 checksum=892482d79e5e16a3e312a52e863a5c8d5cd858626d6e988a459b2bec22b2472d
 conflicts="xf86-video-intel xf86-video-intel-dbg"
-provides="xf86-video-intel-${version}-${revision}"
+provides="xf86-video-intel-${version}_${revision}"
 archs="x86_64* aarch64*"
 
 # Build options
