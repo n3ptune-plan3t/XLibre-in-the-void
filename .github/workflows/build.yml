@@ -52,6 +52,10 @@ jobs:
         working-directory: void-packages
         run: ./xbps-src pkg xlibre-xserver
 
+      - name: Index local repository
+        working-directory: void-packages
+        run: xbps-rindex -a hostdir/binpkgs/*.xbps
+
       - name: Build drivers
         working-directory: void-packages
         run: |
