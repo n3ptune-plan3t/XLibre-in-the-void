@@ -1,9 +1,6 @@
-name: Build and Release XLibre Packages
+name: Manual Build and Release XLibre Packages
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
