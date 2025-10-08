@@ -52,7 +52,7 @@ LDFLAGS+=" -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy"
 LDFLAGS+=" -Wl,-z,relro -Wl,-z,pack-relative-relocs -fno-lto"
 
 pre_configure() {
-    NOCONFIGURE=1 ./autogen.sh
+    ./autogen.sh
 }
 
 pre_build() {
