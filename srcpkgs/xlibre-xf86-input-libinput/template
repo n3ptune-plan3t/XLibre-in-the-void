@@ -12,7 +12,6 @@ license="MIT"
 homepage="https://github.com/X11Libre"
 distfiles="https://github.com/X11Libre/xf86-input-libinput/archive/refs/tags/${pkgname}-${version}.tar.gz"
 checksum=f1be5a443af78307af18103a6bb614021fe163380b0eb43dec820a2389fbd6c8
-wrksrc="xf86-input-libinput-${pkgname}-${version}"
 conflicts="xf86-input-libinput"
 provides="xf86-input-libinput-${version}-${revision}"
 lib32disabled=yes
@@ -40,6 +39,7 @@ xlibre-xf86-input-libinput-devel_package() {
 	depends="${makedepends}"
 	short_desc+=" - development files"
 	pkg_install() {
+		vlicense COPYING
 		vmove usr/include
 		vmove usr/lib/pkgconfig
 	}
