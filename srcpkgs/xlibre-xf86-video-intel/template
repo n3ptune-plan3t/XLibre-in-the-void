@@ -3,7 +3,7 @@ pkgname=xlibre-xf86-video-intel
 version=3.0.0.4
 revision=1
 build_style=gnu-configure
-configure_args="--with-default-dri=3 --libexecdir=/usr/lib"
+configure_args="--prefix=/usr --with-default-dri=3 --libexecdir=/usr/lib"
 hostmakedepends="git automake libtool pkg-config xorg-util-macros
  binutils gcc gettext gzip make"
 makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
@@ -39,25 +39,13 @@ case "$XBPS_TARGET_MACHINE" in
         ;;
 esac
 
-# Security hardening flags
-CFLAGS+=" -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3"
-CFLAGS+=" -Wformat -Werror=format-security -fstack-clash-protection"
-CFLAGS+=" -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fno-lto"
-
-if [ "$XBPS_TARGET_MACHINE" != "aarch64" ]; then
-    CFLAGS+=" -fcf-protection"
-fi
-
-LDFLAGS+=" -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy"
-LDFLAGS+=" -Wl,-z,relro -Wl,-z,pack-relative-relocs -fno-lto"
-
 pre_configure() {
-    ./autogen.sh
+    NOCONFIGURE=1 ./autogen.sh
 }
 
 pre_build() {
-    # Ensure proper CFLAGS are used
     sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+    make
 }
 
 do_check() {
@@ -65,5 +53,6 @@ do_check() {
 }
 
 post_install() {
+    make DESTDIR="${DESTDIR}" install
     vlicense COPYING
 }
