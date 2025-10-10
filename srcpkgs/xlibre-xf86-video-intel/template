@@ -14,7 +14,7 @@ makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
  libXrandr-devel libXvMC-devel xlibre-xserver-devel"
 depends="virtual?xserver-abi-video-28_1 mesa-dri"
 short_desc="Libre fork of Xorg DDX Intel video driver"
-maintainer="tmp"
+maintainer="artist for Xlibre"
 license="MIT"
 homepage="https://github.com/X11Libre"
 distfiles="${homepage}/${_pkgname}/archive/refs/tags/${pkgname}-${version}.tar.gz"
