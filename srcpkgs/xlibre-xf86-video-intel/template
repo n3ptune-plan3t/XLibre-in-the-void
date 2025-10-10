@@ -1,58 +1,55 @@
 # Template file for 'xlibre-xf86-video-intel'
+# Maintainer: artist for Xlibre
 pkgname=xlibre-xf86-video-intel
+_pkgname=xf86-video-intel
 version=3.0.0.4
 revision=1
+# Set the correct working source directory name
+wrksrc="${_pkgname}-${pkgname}-${version}"
+archs="x86_64 aarch64"
 build_style=gnu-configure
-configure_args="--prefix=/usr --with-default-dri=3 --libexecdir=/usr/lib"
-hostmakedepends="git automake libtool pkg-config xorg-util-macros
- binutils gcc gettext gzip make"
-makedepends="libXfont2-devel libXScrnSaver-devel libXcursor-devel libXinerama-devel
- libXrandr-devel libXvMC-devel libXtst-devel xlibre-xserver-devel
- pixman-devel xcb-util-devel libxcb-devel libxshmfence-devel libdrm-devel
- libXrender-devel libX11-devel libXdamage-devel libpciaccess-devel
- MesaLib-devel"
-depends="virtual?xserver-abi-video-28_0 mesa-dri libXvMC pixman xcb-util
- libxcb libXfixes libxshmfence libdrm libXrender libX11 libXdamage
- libXext libpciaccess"
-checkdepends="make"
-short_desc="Libre fork of X.Org Intel i810/i830/i915/945G/G965+ video drivers"
-maintainer="tmp <tmp@tmp.com>"
+configure_args="--with-default-dri=3"
+hostmakedepends="automake libtool pkg-config xorg-util-macros"
+makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
+ libXrandr-devel libXvMC-devel xlibre-xserver-devel"
+depends="virtual?xserver-abi-video-28_1 mesa-dri"
+short_desc="Libre fork of Xorg DDX Intel video driver"
+maintainer="tmp"
 license="MIT"
-homepage="https://github.com/X11Libre/xf86-video-intel"
-distfiles="${homepage}/archive/refs/tags/${pkgname}-${version}.tar.gz"
+homepage="https://github.com/X11Libre"
+distfiles="${homepage}/${_pkgname}/archive/refs/tags/${pkgname}-${version}.tar.gz"
 checksum=892482d79e5e16a3e312a52e863a5c8d5cd858626d6e988a459b2bec22b2472d
-conflicts="xf86-video-intel xf86-video-intel-dbg"
-provides="xf86-video-intel-${version}_${revision}"
-archs="x86_64* aarch64*"
-
-# Build options
 lib32disabled=yes
-nodebug=yes
-nolto=yes
 
-case "$XBPS_TARGET_MACHINE" in
-    x86_64*)
-        CFLAGS+=" -march=x86-64"
-        ;;
-    aarch64*)
-        CFLAGS+=" -march=armv8-a"
-        ;;
+# Apply hardened build flags from the XLibre project
+case "$XBPS_MACHINE" in
+ "x86_64")
+  CFLAGS=" -march=x86-64"
+  ;;
+ "aarch64")
+  CFLAGS=" -march=armv8-a"
+  ;;
+ *)
+  CFLAGS=" -march=native"
+  ;;
 esac
+CFLAGS+=" -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security"
+CFLAGS+=" -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
+LDFLAGS=" -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy -Wl,-z,relro -Wl,-z,pack-relative-relocs"
+if [[ $XBPS_MACHINE != 'aarch64' ]]; then
+ CFLAGS+=" -fcf-protection"
+fi
+# Specific flags for xf86-video-intel
+CFLAGS+=" -fno-lto"
+LDFLAGS+=" -fno-lto"
+CXXFLAGS="${CFLAGS} -Wp,-D_GLIBCXX_ASSERTIONS"
 
 pre_configure() {
-    NOCONFIGURE=1 ./autogen.sh
-}
-
-pre_build() {
-    sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
-    make
-}
-
-do_check() {
-    make check
+	# Force regeneration of configure script
+	NOCONFIGURE=1 ./autogen.sh
 }
 
 post_install() {
-    make DESTDIR="${DESTDIR}" install
-    vlicense COPYING
+	# Install the license file
+	vlicense COPYING
 }
