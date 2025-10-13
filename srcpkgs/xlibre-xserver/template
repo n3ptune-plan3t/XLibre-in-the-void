@@ -22,7 +22,7 @@ makedepends="MesaLib-devel libXaw-devel libXfont2-devel
  xcb-util-keysyms-devel xcb-util-renderutil-devel xcb-util-wm-devel xkbcomp
  nettle-devel libxcvt-devel font-util"
 # Depends on the XLibre ecosystem
-depends="xkeyboard-config xlibre-xserver-common xlibre-xf86-input-libinput libmd"
+depends="xkeyboard-config xlibre-xserver-common libmd"
 checkdepends="xkeyboard-config"
 short_desc="XLibre fork of the X11 server from X.org"
 maintainer="artist for Xlibre"
