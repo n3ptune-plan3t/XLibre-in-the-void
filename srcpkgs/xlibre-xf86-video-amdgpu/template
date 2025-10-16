@@ -5,7 +5,7 @@ revision=1
 build_style=gnu-configure
 configure_args="--prefix=/usr --enable-glamor"
 hostmakedepends="pkg-config autoconf automake libtool"
-makedepends="xlibre-xserver-devel MesaLib-devel libdrm-devel xorgproto eudev-libudev-devel libpciaccess-devel pixman-devel xorg-util-macros"
+makedepends="xlibre-xserver-devel MesaLib-devel libdrm-devel xorgproto eudev-libudev-devel libpciaccess-devel pixman-devel xorg-util-macros libXfont2-devel"
 depends="virtual?xserver-abi-video-28_0 mesa-dri"
 short_desc="XLibre fork of X.Org amdgpu video driver"
 maintainer="artist for Xlibre <artist@xlibre.org>"
