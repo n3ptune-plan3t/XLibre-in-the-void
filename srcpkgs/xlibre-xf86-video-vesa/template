@@ -1,0 +1,46 @@
+# Template file for 'xlibre-xf86-video-vesa'
+pkgname=xlibre-xf86-video-vesa
+version=2.6.0.3
+revision=1
+build_style=gnu-configure
+hostmakedepends="pkg-config"
+makedepends="xlibre-xserver-devel"
+short_desc="XLibre fork of X.Org vesa video driver"
+maintainer="n3ptune-plan3t <n3ptune@plan3t>"
+license="MIT"
+homepage="https://github.com/X11Libre"
+distfiles="https://github.com/X11Libre/xf86-video-vesa/archive/refs/tags/${pkgname}-${version}.tar.gz"
+checksum="7137c2bdd9e290aff83565d77b842a209b138776785c745cf7c0d10c9f25fe8f"
+conflicts="xf86-video-vesa"
+provides="xf86-video-vesa-${version}_${revision}"
+archs="x86_64 aarch64"
+
+# Build options
+lib32disabled=yes
+nodebug=yes
+
+case "$XBPS_TARGET_MACHINE" in
+    x86_64*)
+        CFLAGS+=" -march=x86-64"
+        ;;
+    aarch64*)
+        CFLAGS+=" -march=armv8-a"
+        ;;
+esac
+
+# Security hardening flags
+CFLAGS+=" -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security"
+CFLAGS+=" -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
+LDFLAGS+=" -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy -Wl,-z,relro -Wl,-z,pack-relative-relocs"
+
+if [ "$XBPS_TARGET_MACHINE" != "aarch64" ]; then
+    CFLAGS+=" -fcf-protection"
+fi
+
+pre_configure() {
+    ./autogen.sh
+}
+
+post_install() {
+    vlicense COPYING
+}
