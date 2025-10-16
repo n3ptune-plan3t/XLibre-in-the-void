@@ -24,10 +24,6 @@ jobs:
           wget https://repo-default.voidlinux.org/static/xbps-static-latest.x86_64-musl.tar.xz
           tar xvf xbps-static-latest.x86_64-musl.tar.xz
           sudo install -Dm755 usr/bin/* /usr/local/bin/
-
-      - name: Clean XBPS hostdir
-        run: |
-          ./xbps-src pkg clean
           
       - name: Bootstrap XBPS-src
         if: steps.cache-hostdir.outputs.cache-hit != 'true'
