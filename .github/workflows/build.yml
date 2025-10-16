@@ -25,13 +25,11 @@ jobs:
           tar xvf xbps-static-latest.x86_64-musl.tar.xz
           sudo install -Dm755 usr/bin/* /usr/local/bin/
 
-      - name: Cache XBPS hostdir
-        id: cache-hostdir
-        uses: actions/cache@v4
-        with:
-          path: void-packages/hostdir
-          key: xbps-hostdir-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('void-packages/xbps-src', 'void-packages/common/bootstrap/**', 'srcpkgs/**/*.template') }}
-
+      - name: Clean XBPS hostdir
+        working-directory: void-packages
+        run: |
+          ./xbps-src pkg clean
+          
       - name: Bootstrap XBPS-src
         if: steps.cache-hostdir.outputs.cache-hit != 'true'
         working-directory: void-packages
@@ -75,24 +73,3 @@ jobs:
         with:
           name: xlibre-packages
           path: void-packages/hostdir/binpkgs/*.xbps
-
-  release:
-    name: Create GitHub Release 🚀
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download built packages from artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: xlibre-packages
-
-      - name: Create Release and Upload Assets
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "*.xbps"
-          generate_release_notes: true
-          tag_name: ${{ github.ref_name }}-${{ github.sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
