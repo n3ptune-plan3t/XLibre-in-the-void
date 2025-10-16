@@ -26,7 +26,6 @@ jobs:
           sudo install -Dm755 usr/bin/* /usr/local/bin/
 
       - name: Clean XBPS hostdir
-        working-directory: void-packages
         run: |
           ./xbps-src pkg clean
           
