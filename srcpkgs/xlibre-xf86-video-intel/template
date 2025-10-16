@@ -20,7 +20,7 @@ checksum=892482d79e5e16a3e312a52e863a5c8d5cd858626d6e988a459b2bec22b2472d
 lib32disabled=yes
 
 # Apply hardened build flags from the XLibre project
-case "$XBPS_MACHINE" in
+case "$XBPS_TARGET_MACHINE" in
  "x86_64")
   CFLAGS=" -march=x86-64"
   ;;
@@ -34,7 +34,7 @@ esac
 CFLAGS+=" -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security"
 CFLAGS+=" -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
 LDFLAGS=" -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,lazy -Wl,-z,relro -Wl,-z,pack-relative-relocs"
-if [[ $XBPS_MACHINE != 'aarch64' ]]; then
+if [[ $XBPS_TARGET_MACHINE != 'aarch64' ]]; then
  CFLAGS+=" -fcf-protection"
 fi
 # Specific flags for xf86-video-intel
