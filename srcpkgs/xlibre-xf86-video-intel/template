@@ -4,14 +4,12 @@ pkgname=xlibre-xf86-video-intel
 _pkgname=xf86-video-intel
 version=3.0.0.4
 revision=1
-# Set the correct working source directory name
-wrksrc="${_pkgname}-${pkgname}-${version}"
 archs="x86_64 aarch64"
 build_style=gnu-configure
 configure_args="--with-default-dri=3"
 hostmakedepends="automake libtool pkg-config xorg-util-macros"
 makedepends="libXScrnSaver-devel libXcursor-devel libXinerama-devel
- libXrandr-devel libXvMC-devel xlibre-xserver-devel"
+ libXrandr-devel libXvMC-devel xlibre-xserver-devel pixman-devel xorgproto"
 depends="virtual?xserver-abi-video-28_1 mesa-dri"
 short_desc="Libre fork of Xorg DDX Intel video driver"
 maintainer="tmp"
@@ -52,4 +50,15 @@ pre_configure() {
 post_install() {
 	# Install the license file
 	vlicense COPYING
+}
+
+xlibre-xf86-video-intel-devel_package() {
+	lib32disabled=yes
+	depends="${makedepends}"
+	short_desc+=" - development files"
+	pkg_install() {
+		vlicense COPYING
+		vmove usr/include
+		vmove usr/lib/pkgconfig
+	}
 }
