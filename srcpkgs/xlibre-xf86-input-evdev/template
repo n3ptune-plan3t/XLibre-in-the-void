@@ -49,3 +49,13 @@ pre_configure() {
 post_install() {
     vlicense COPYING
 }
+
+xlibre-xf86-input-evdev-devel_package() {
+	lib32disabled=yes
+	depends="${makedepends}"
+	short_desc+=" - development files"
+	pkg_install() {
+		vlicense COPYING
+		vmove usr/include
+		vmove usr/lib/pkgconfig
+}
