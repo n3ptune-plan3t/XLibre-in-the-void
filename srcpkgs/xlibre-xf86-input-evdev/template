@@ -58,4 +58,5 @@ xlibre-xf86-input-evdev-devel_package() {
 		vlicense COPYING
 		vmove usr/include
 		vmove usr/lib/pkgconfig
+	}
 }
