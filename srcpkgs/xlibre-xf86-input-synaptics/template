@@ -14,7 +14,7 @@ distfiles="https://github.com/X11Libre/xf86-input-synaptics/archive/refs/tags/${
 checksum="3e6bc8453f5f957074db28b12e4826ef65ab017e0dd5e34a29d57692ce0c7fe5"
 conflicts="xf86-input-synaptics synaptics"
 replaces="synaptics"
-provides="xf86-input-synaptics-${version}_${revision} synaptics"
+provides="xf86-input-synaptics-${version}_${revision}"
 archs="x86_64 aarch64"
 
 # Build options
