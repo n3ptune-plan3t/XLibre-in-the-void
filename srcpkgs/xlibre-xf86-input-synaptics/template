@@ -59,4 +59,5 @@ xlibre-xf86-input-synaptics-devel_package() {
 		vlicense COPYING
 		vmove usr/include
 		vmove usr/lib/pkgconfig
+	}
 }
